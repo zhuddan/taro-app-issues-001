@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import {Button,View} from '@tarojs/components'
 import Taro from '@tarojs/taro'
 
@@ -19,7 +19,6 @@ const getCacheToken = () => Taro.getStorageSync('token') ?? ''
 const setCacheToken = (token: string) => Taro.setStorageSync('token', token)
 const removeCacheToken = () => Taro.removeStorageSync('token')
 
-const AuthContext = createContext<any>(null)
 async function getUserInfo() {
   await sleep(999)
   return { msg: 'success', code: 200, data: { username: 'zd' } }
@@ -61,13 +60,10 @@ export default function Home() {
   const queryClient = useQueryClient()
   const [token, _setToken] = useState(getCacheToken() ?? '')
   const [typeUser, _setTypeUser] = useState('')
-  const setTypeUser = useCallback((typeUser: string, log: any) => {
-    console.log('@setTypeUser', log, typeUser, performance.now())
-    _setTypeUser(typeUser)
+  const setTypeUser = useCallback((_typeUser: string, log: any) => {
+    console.log('@setTypeUser', log, _typeUser, performance.now())
+    _setTypeUser(_typeUser)
   }, [])
-
-  const [imAvatar, setImAvatar] = useState('')
-  const [imNickName, setImNickName] = useState('')
   const {
     mutate: submitLogout,
     reset: restLogout,
@@ -79,9 +75,9 @@ export default function Home() {
     // },
   })
 
-  const setToken = useCallback((token: string) => {
-    setCacheToken(token)
-    _setToken(token)
+  const setToken = useCallback((_token: string) => {
+    setCacheToken(_token)
+    _setToken(_token)
   }, [])
   const login = useCallback(() => {
     setToken('123')
@@ -94,8 +90,6 @@ export default function Home() {
   const {
     data: userInfo,
     isFetching: isUpdatingUserInfo,
-    error,
-    refetch,
   } = useUserInfo(!!token && !isLogoutPending)
 
   const isLoggedIn = useMemo(() => {
